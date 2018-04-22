@@ -39,6 +39,7 @@ int main() {
 
         factorial *= i; // Same as factorial = factorial * i;
 
+        // Used for debugging. If you put #define DEBUG; at the top this portion will execute else it won't.
         #ifdef DEBUG
                 printf("Value of I is : %d\n", i);
         #endif
