@@ -6,7 +6,7 @@
 int main(){
     
     // Define an integer
-    int a = 1234567;
+    int a = 12345;
     
     /**
      * a % 10 will always print last number.
