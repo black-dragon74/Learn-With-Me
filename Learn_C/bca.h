@@ -286,7 +286,7 @@ void printStarPyramid(int rows){
 
 // Function to print a reversed star pyramid of n rows
 void printStarPyramidReversed(int rows){
-  int count = rows*2; // Stars to print intially, logically: pyramid = (rows * 2) - 1
+  int count = rows * 2; // Stars to print intially, logically: pyramid = (rows * 2) - 1
   for (int i = 1; i <= rows; i++) { // Handles the rows
     for (int j = 1; j < i; j++) { // Handles the spacing
       printf(" ");
