@@ -107,7 +107,7 @@ int main(int argc, char **argv)
     pointerToB++;   // Correct, reassigning pointer's address is allowed.
     //*pointerToB = 55;   // Incorrect, reassigning value is disallowed as pointerToB point to const int data type.
 
-    // Summary: We can value of the pointer's address but not of the variable that it is pointing to with 'const int *pointer' declaration type.
+    // Summary: We can change value of the pointer's address but not of the variable that it is pointing to with 'const int *pointer' declaration type.
 
     //
     //  Now let's take a look at constant pointers.
