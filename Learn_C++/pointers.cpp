@@ -1,6 +1,18 @@
 //
 //  Created by Nick on 23-08-2019
 //
+
+//
+//  The code below assumes you have a proper understanding of how functions work in C and C++
+//  The below concept applies both for C and C++
+//  Please read this file with a calm and peaceful mind. If you opened this up casually. Please close and come back later.
+//  The concepts are a bit advanced and might seem confusing to the reader.
+//  Take time, read carefully and most important, practice on your own.
+//  Pointers are a very important aspect of C and C++. These are the sole reason why C and C++ are such lightning fast performing languages.
+//
+//  Shall you choose to stay, May the force be with you!
+//
+
 #include <iostream>
 
 using namespace std;
@@ -179,3 +191,4 @@ int main(int argc, char **argv)
     return 1;
 }
 // EOF
+
