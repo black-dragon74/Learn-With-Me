@@ -42,9 +42,8 @@ public:
 
     Technical operator+ (const Technical &obj2)
     {
-        int ss = (*this).salary + obj2.salary;
-        int bs = (*this).bonus + obj2.bonus;
-        return {1, "", 1, "", 1, ss, bs };
+        int ss = (*this).age + obj2.age;;
+        return {1, "", ss, "", 1, 1, 1 };
     }
 };
 
@@ -64,9 +63,8 @@ public:
 
     NonTechnical operator+ (const NonTechnical &obj2)
     {
-        int ss = (*this).salary + obj2.salary;
-        int bs = (*this).bonus + obj2.bonus;
-        return {1, "", 1, "", 1, ss, bs };
+        int ss = (*this).age + obj2.age;
+        return {1, "", ss, "", 1, 1, 1 };
     }
 };
 
@@ -95,11 +93,11 @@ int main(int argc, char **argv)
     auto techEmps = SalaryOfEmps(t1, t2);
     auto nonTechEmps = SalaryOfEmps(nt1, nt2, nt3);
 
-    int techSal = (techEmps.salary + techEmps.bonus) / 2;
-    int nonTechSal = (nonTechEmps.salary + nonTechEmps.bonus) / 3;
+    int techSal = techEmps.age / 2;
+    int nonTechSal = nonTechEmps.age / 3;
 
-    cout << "Mean of tech employee salaries: " << techSal << endl;
-    cout << "Mean of nontech employee salaries: " << nonTechSal << endl;
+    cout << "Mean of tech employee age: " << techSal << endl;
+    cout << "Mean of nontech employee age: " << nonTechSal << endl;
 
     return 0;
 }
