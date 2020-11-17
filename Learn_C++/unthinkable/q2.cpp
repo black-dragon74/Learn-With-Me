@@ -50,7 +50,7 @@ int main(int argc, char **argv) {
     cin >> from >> to;
 
     int sum {0};
-    for (int i = from; i < to; ++i) {
+    for (int i = from; i <= to; ++i) {
         if (isPrime(i) && isMegaPrime(i))
             sum += i;
     }
