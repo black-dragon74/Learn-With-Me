@@ -1,6 +1,6 @@
 //
 //  Code is poetry
-//  Created by Nick aka black-dragon74 on 17-11-2020  
+//  Created by Nick aka black-dragon74 on 17-11-2020
 //
 
 /*
@@ -33,7 +33,7 @@ bool vowelsInAscending(const string &word) {
 }
 
 void numOfDuplicateWords(const string &sentence, vector<string> &vec, vector<int> &countVec) {
-    char wordStore[100][100];		        // Barbaric, IK, but that is what competitve programmig is.
+    char wordStore[100][100];        // Barbaric, IK, but that is what competitve programmig is.
     memset(wordStore, 0, sizeof(wordStore));    // Zeroing the array before use is needed on some systems
 
     int rowIterator = 0, colIterator = 0, i, length, count;
@@ -76,6 +76,9 @@ int main(int argc, char **argv) {
     numOfDuplicateWords(sample, strVec, countVec);
 
     for (int i = 0; i < strVec.size(); ++i) {
-        cout << strVec[i] << " " << countVec[i] << " ";
+        auto word = strVec[i];
+        if (vowelsInAscending(word)) {
+            cout << word << " " << countVec[i] << " ";
+        }
     }
 }
