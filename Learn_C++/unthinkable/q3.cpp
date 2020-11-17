@@ -1,3 +1,8 @@
+//
+//  Code is poetry
+//  Created by Nick aka black-dragon74 on 17-11-2020  
+//
+
 /*
  * Given a sentence, find the number of duplicate words which have vowels in ascending order
 */

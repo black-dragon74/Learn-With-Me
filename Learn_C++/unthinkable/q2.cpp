@@ -1,3 +1,8 @@
+//
+//  Code is poetry
+//  Created by Nick aka black-dragon74 on 17-11-2020  
+//
+
 /*
  * Given a range from m to n(inclusive), find the sum of all the mega-primes
  * Mega primes are the numbers which have each individual digit as a prime too.
