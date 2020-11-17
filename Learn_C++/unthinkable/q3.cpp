@@ -33,7 +33,7 @@ bool vowelsInAscending(const string &word) {
 }
 
 void numOfDuplicateWords(const string &sentence, vector<string> &vec, vector<int> &countVec) {
-    char wordStore[UINT16_MAX][UINT16_MAX];        // Barbaric, IK, but that is what competitve programmig is.
+    char wordStore[100][100];		        // Barbaric, IK, but that is what competitve programmig is.
     memset(wordStore, 0, sizeof(wordStore));    // Zeroing the array before use is needed on some systems
 
     int rowIterator = 0, colIterator = 0, i, length, count;
