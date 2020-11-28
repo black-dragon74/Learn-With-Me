@@ -99,7 +99,7 @@ Node *rebalanceIfNeededPD(Node *node) {
         if (getBalanceFactor(node->right) <= 0) {
             // RR
             DBG(printf("RR PD\n"))
-            return rightRotate(node);
+            return leftRotate(node);
         } else {
             // RL
             DBG(printf("RL PD\n"))
