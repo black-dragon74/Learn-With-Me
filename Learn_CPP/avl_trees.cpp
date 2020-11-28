@@ -75,6 +75,9 @@ int getBalanceFactor(Node *root) {
 
 Node *rebalanceIfNeededPD(Node *node) {
     auto balanceFactor = getBalanceFactor(node);
+    if (balanceFactor > 1 || balanceFactor < -1) {
+        DBG(printf("Unbalanced node: %d\n", node->data))
+    }
 
     if (balanceFactor > 1) {
         // One thing is sure that it is caused due to one left insertion
@@ -121,6 +124,9 @@ Node *rebalanceIfNeededPD(Node *node) {
 Node *rebalanceIfNeededPI(const int &val, Node *node) {
     // First, get the balance factor
     auto balanceFactor = getBalanceFactor(node);
+    if (balanceFactor > 1 || balanceFactor < -1) {
+        DBG(printf("Unbalanced node: %d\n", node->data))
+    }
 
     // Now we check for the unbalance
     if (balanceFactor > 1) {    // One imbalance is on left, that's for sure
@@ -211,7 +217,6 @@ Node *deleteValueFromAVLTree(int val, Node *root) {
                 // There is one child, it becomes the parent
                 *root = *temp;
             }
-
             delete temp;
         } else {
             // Fucker has 2 children, get the inorder successor
@@ -249,7 +254,7 @@ void getLeaves(Node *root) {
     // Leaf has no child
     if (!root->left && !root->right) {
         cout << "Leaf: " << root->data << endl;
-        DBG(printf("eight leaf: %d\n", root->height))
+        DBG(printf("Height leaf: %d\n", root->height))
         return;
     }
 
@@ -268,7 +273,16 @@ Node *searchValueInAVL(int val, Node *root) {
         return searchValueInAVL(val, root->right);
 }
 
-int main(int argc, char **argv) {
+void printAVL(Node *root) {
+    if (!root)
+        return;
+
+    printAVL(root->left);
+    cout << root->data << " ";
+    printAVL(root->right);
+}
+
+int main(/*int argc, char **argv*/) {
 
     Node *root{nullptr};
 
@@ -280,6 +294,8 @@ int main(int argc, char **argv) {
     root = insertValueInAVLTree(11, root);
     root = insertValueInAVLTree(1, root);
     root = insertValueInAVLTree(2, root);
+
+    printAVL(root); cout << endl;
 
     root = deleteValueFromAVLTree(10, root);
 
