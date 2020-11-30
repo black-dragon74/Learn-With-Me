@@ -183,11 +183,12 @@ void RedBlackTree::deleteNode(Node *nodeToDelete) {
     Node *replacementNode = BSTReplacementNode(nodeToDelete);
 
     // True when replacementNode and nodeToDelete are both black
+    // If replacement is NULL then also it is considered black as null nodes are black in RBT
     bool uvBlack = ((replacementNode == nullptr || replacementNode->color == kcBlack) &&
                     (nodeToDelete->color == kcBlack));
     Node *parent = nodeToDelete->parent;
 
-    if (replacementNode == nullptr) {
+    if (!replacementNode) {
         // replacementNode is NULL therefore nodeToDelete is leaf
         if (nodeToDelete == root) {
             // nodeToDelete is root, making root null
@@ -345,67 +346,66 @@ void RedBlackTree::fixDoubleRed(Node *&node) {
     }
 }
 
-void RedBlackTree::fixDoubleBlack(Node *&node) {
-    if (node == root)
+void RedBlackTree::fixDoubleBlack(Node *&dbNode) {
+    if (dbNode == root)
         return;
 
-    auto *sibling = node->getSibling(), *parent = node->parent;
-    if (!sibling) {
-        // No sibling, push double black up
-        fixDoubleBlack(parent);
-    } else {
-        if (sibling->color == RED) {
-            // Sibling is red
-            parent->color = RED;
-            sibling->color = BLACK;
+    auto *parent = dbNode->parent, *sibling = dbNode->getSibling();
 
-            if (sibling->isLeftChild()) {
-                // Left left
-                rotateRight(parent);
-            } else {
-                // Right right
-                rotateLeft(parent);
-            }
-            fixDoubleBlack(node);
-        } else {
-            // Sibling is black
-            if (sibling->hasRedChild()) {
-                if (sibling->left && sibling->left->color == RED) {
-                    if (sibling->isLeftChild()) {
-                        // Left left
-                        sibling->left->color = sibling->color;
-                        sibling->color = parent->color;
-                        rotateRight(parent);
-                    } else {
-                        // Right left
-                        sibling->left->color = parent->color;
-                        rotateRight(sibling);
-                        rotateLeft(parent);
-                    }
-                } else {
-                    if (sibling->isLeftChild()) {
-                        // Left Right
-                        sibling->right->color = parent->color;
-                        rotateLeft(sibling);
-                        rotateRight(parent);
-                    } else {
-                        // Right right
-                        sibling->right->color = sibling->color;
-                        sibling->color = parent->color;
-                        rotateLeft(parent);
-                    }
-                }
-                parent->color = BLACK;
-            } else {
-                // 2 black children
-                sibling->color = RED;
-                if (parent->color == BLACK) {
-                    fixDoubleBlack(parent);
-                } else {
-                    parent->color = BLACK;
-                }
-            }
+    if (!sibling) {
+        fixDoubleBlack(parent); // Push db up to parent as there is no sibling
+        return;
+    }
+
+    if (sibling->color == RED) {
+        swapColor(parent, sibling);
+
+        if (sibling->isLeftChild())
+            rotateLeft(parent);
+        else {
+            rotateRight(parent);
         }
+
+        fixDoubleBlack(dbNode); // If exists
+        return;
+    }
+
+    // If we het here, sibling is black
+    if (!sibling->hasRedChild()) {
+        // Means both it's children are black
+        sibling->color = RED;
+        if (parent->color == BLACK) // If it is black, it'll become double black, fix again
+        {
+            fixDoubleBlack(parent);
+        } else {
+            parent->color = BLACK; // Else, it means that the color was red, set it to black.
+        }
+        return;
+    }
+
+    // If we are here, sibling is black, and one or both of its children are RED
+    // Now we need to check for the child on sibling who is far from us
+    auto *farChild = dbNode->isLeftChild() ? sibling->right : sibling->left;
+    auto *nearChild = farChild->getSibling();
+    if (farChild->color == BLACK) {
+        swapColor(sibling, nearChild);
+
+        if (dbNode->isLeftChild())
+            rotateRight(sibling);
+        else
+            rotateLeft(sibling);
+
+        // It is must to apply the next case
+        goto case7;
+    } else {
+        case7:
+        swapColor(parent, sibling);
+        if (dbNode->isLeftChild())
+            rotateLeft(parent);
+        else
+            rotateRight(parent);
+
+        farChild->color = RED;
     }
 }
 
