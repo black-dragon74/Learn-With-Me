@@ -10,6 +10,9 @@ enum Color {
     kcBlack,
 };
 
+#define RED kcRed
+#define BLACK kcBlack
+
 struct Node {
     int data;
     Node *left, *right, *parent;
@@ -27,6 +30,11 @@ struct Node {
 
     bool isRightChild() {
         return !isLeftChild();
+    }
+
+    [[nodiscard]]
+    bool hasRedChild() const {
+        return (left && left->color == kcRed) || (right && right->color == kcRed);
     }
 
     Node *getSibling() {
@@ -48,11 +56,12 @@ class RedBlackTree {
 private:
     Node *root;
 
-    void insertionDidFinish(Node *&);
+    void fixDoubleRed(Node *&);
+
+    void fixDoubleBlack(Node *&);
 
     void p_in_order(Node *x) {
         if (!x) {
-            cout << "Empty tree.\n";
             return;
         }
 
@@ -83,6 +92,14 @@ private:
         }
     }
 
+    static void swapColor(Node *n1, Node *n2) {
+        swap(n1->color, n2->color);
+    }
+
+    static void swapValue(Node *n1, Node *n2) {
+        swap(n1->data, n2->data);
+    }
+
 public:
 
     RedBlackTree() : root(nullptr) {}
@@ -91,7 +108,13 @@ public:
 
     void rotateRight(Node *&);
 
+    Node *search(const int &);
+
     void insert(const int &);
+
+    void deleteNodeWithValue(const int &);
+
+    void deleteNode(Node *);
 
     void inOrder() {
         p_in_order(root);
@@ -117,6 +140,111 @@ Node *BSTInsert(Node *root, Node *newNodePtr) {
     }
 
     return root;
+}
+
+Node *successorNodeInSubtree(Node *node) {
+    if (!node || !node->left)
+        return node;
+
+    return successorNodeInSubtree(node->left);
+}
+
+Node *BSTReplacementNode(Node *node) {
+    // IF two children, return inorder successor
+    if (node->left && node->right)
+        return successorNodeInSubtree(node->right);
+
+    // If leaf, return null
+    if (!node->left && !node->right)
+        return nullptr;
+
+    // IF single child, return that child
+    if (node->left)
+        return node->left;
+    else
+        return node->right;
+}
+
+Node *search(Node *node, const int &val) {
+    if (!node || node->data == val)
+        return node;
+
+    if (val < node->data)
+        return search(node->left, val);
+    else
+        return search(node->right, val);
+}
+
+Node *RedBlackTree::search(const int &val) {
+    return ::search(root, val);
+}
+
+void RedBlackTree::deleteNode(Node *nodeToDelete) {
+    Node *replacementNode = BSTReplacementNode(nodeToDelete);
+
+    // True when replacementNode and nodeToDelete are both black
+    bool uvBlack = ((replacementNode == nullptr || replacementNode->color == kcBlack) &&
+                    (nodeToDelete->color == kcBlack));
+    Node *parent = nodeToDelete->parent;
+
+    if (replacementNode == nullptr) {
+        // replacementNode is NULL therefore nodeToDelete is leaf
+        if (nodeToDelete == root) {
+            // nodeToDelete is root, making root null
+            root = nullptr;
+        } else {
+            if (uvBlack) {
+                // replacementNode and nodeToDelete both black
+                // nodeToDelete is leaf, fix double black at nodeToDelete
+                fixDoubleBlack(nodeToDelete);
+            } else {
+                // replacementNode or nodeToDelete is red
+                if (nodeToDelete->getSibling() != nullptr)
+                    // sibling is not null, make it red"
+                    nodeToDelete->getSibling()->color = kcRed;
+            }
+
+            // delete nodeToDelete from the tree
+            if (nodeToDelete->isLeftChild()) {
+                parent->left = nullptr;
+            } else {
+                parent->right = nullptr;
+            }
+        }
+        delete nodeToDelete;
+        return;
+    }
+
+    if (nodeToDelete->left == nullptr || nodeToDelete->right == nullptr) {
+        // nodeToDelete has 1 child
+        if (nodeToDelete == root) {
+            // nodeToDelete is root, assign the value of replacementNode to nodeToDelete, and delete replacementNode
+            nodeToDelete->data = replacementNode->data;
+            nodeToDelete->left = nodeToDelete->right = nullptr;
+            delete replacementNode;
+        } else {
+            // Detach nodeToDelete from tree and move replacementNode up
+            if (nodeToDelete->isLeftChild()) {
+                parent->left = replacementNode;
+            } else {
+                parent->right = replacementNode;
+            }
+            delete nodeToDelete;
+            replacementNode->parent = parent;
+            if (uvBlack) {
+                // replacementNode and nodeToDelete both black, fix double black at replacementNode
+                fixDoubleBlack(replacementNode);
+            } else {
+                // replacementNode or nodeToDelete red, color replacementNode black
+                replacementNode->color = kcBlack;
+            }
+        }
+        return;
+    }
+
+    // nodeToDelete has 2 children, swap values with successor and recurse
+    swapValue(replacementNode, nodeToDelete);
+    deleteNode(replacementNode);
 }
 
 void RedBlackTree::rotateLeft(Node *&prevNode) {
@@ -169,72 +297,116 @@ void RedBlackTree::rotateRight(Node *&prevNode) {
     prevNode->parent = newNode;                     // newNode is now the parent node of the prevNode
 }
 
-void RedBlackTree::insertionDidFinish(Node *&node) {
-    Node *parentPtr{nullptr};
-    Node *grandParentPtr{nullptr};
+void RedBlackTree::fixDoubleRed(Node *&node) {
+    // 1. If node is root, color black and exit
+    if (root == node) {
+        node->color = kcBlack;
+        return;
+    }
 
-    while ((node != root) && (node->color != kcBlack) && (node->parent->color == kcRed)) {
-        parentPtr = node->parent;
-        grandParentPtr = node->getGrandParent();
+    // 2. If parent of new node is black, return.
+    if (node->parent->color == kcBlack)
+        return;
 
-        // Case A, parent of node is left child of node's grandparent
-        if (parentPtr->isLeftChild()) {
-            auto *unclePtr = node->getUncle();
-
-            // Case A.1, check uncle's color, if red, recolor
-            if (unclePtr && unclePtr->color == kcRed) {
-                V(printf("A.1\n"))
-                grandParentPtr->color = kcRed;
-                parentPtr->color = kcBlack;
-                unclePtr->color = kcBlack;
-                node = grandParentPtr;
+    // 3. If parent of new node is red, check color of it's uncle.
+    auto *grandParent = node->getGrandParent();
+    auto *parent = node->parent;
+    auto *uncle = node->getUncle();
+    // if (parent->color == kcRed) is not needed as if it was black, the statement would've returned
+    // 3.1 If uncle is red, recolor and then recurse on grandparent
+    if (uncle && uncle->color == kcRed) {
+        parent->color = kcBlack;
+        uncle->color = kcBlack;
+        grandParent->color = kcRed;
+        fixDoubleRed(grandParent);
+    } else {
+        // 3.2, If color is black or null then rotate and recolor
+        if (parent->isLeftChild()) {
+            if (node->isLeftChild()) {
+                // Left left
+                swapColor(parent, grandParent);
             } else {
-                // Case A.2, node is right child, left rotation is required
-                if (node->isRightChild()) {
-                    V(printf("A.2\n"))
-                    rotateLeft(parentPtr);
-                    node = parentPtr;
-                    parentPtr = node->parent;
-                }
-
-                // Case A.3, node is left child, right rotation required
-                V(printf("A.3\n"))
-                rotateRight(grandParentPtr);
-                swap(parentPtr->color, grandParentPtr->color);
-                node = parentPtr;
+                // Left right
+                rotateLeft(parent);
+                swapColor(node, grandParent);
             }
-        }
-
-            // Case B, parent of node is right child of node's grandparent
-        else {
-            auto *unclePtr = node->getUncle();
-
-            // Case B.1, uncle is red, only recolor required
-            if (unclePtr && unclePtr->color == kcRed) {
-                V(printf("B.1\n"))
-                grandParentPtr->color = kcRed;
-                parentPtr->color = kcBlack;
-                unclePtr->color = kcBlack;
-                node = grandParentPtr;
+            rotateRight(grandParent);
+        } else {
+            if (node->isRightChild()) {
+                // Right right
+                swapColor(parent, grandParent);
             } else {
-                // Case B.2, node is left child, right rotation is required
-                if (node->isLeftChild()) {
-                    V(printf("B.2\n"))
-                    rotateRight(parentPtr);
-                    node = parentPtr;
-                    parentPtr = node->parent;
-                }
+                // Right left
+                rotateRight(parent);
+                swapColor(node, grandParent);
+            }
+            rotateLeft(grandParent);
+        }
+    }
+}
 
-                // Case B.3, node is right child, left rotation is required
-                V(printf("B.3\n"))
-                rotateLeft(grandParentPtr);
-                swap(parentPtr->color, grandParentPtr->color);
-                node = parentPtr;
+void RedBlackTree::fixDoubleBlack(Node *&node) {
+    if (node == root)
+        return;
+
+    auto *sibling = node->getSibling(), *parent = node->parent;
+    if (!sibling) {
+        // No sibling, push double black up
+        fixDoubleBlack(parent);
+    } else {
+        if (sibling->color == RED) {
+            // Sibling is red
+            parent->color = RED;
+            sibling->color = BLACK;
+
+            if (sibling->isLeftChild()) {
+                // Left left
+                rotateRight(parent);
+            } else {
+                // Right right
+                rotateLeft(parent);
+            }
+            fixDoubleBlack(node);
+        } else {
+            // Sibling is black
+            if (sibling->hasRedChild()) {
+                if (sibling->left && sibling->left->color == RED) {
+                    if (sibling->isLeftChild()) {
+                        // Left left
+                        sibling->left->color = sibling->color;
+                        sibling->color = parent->color;
+                        rotateRight(parent);
+                    } else {
+                        // Right left
+                        sibling->left->color = parent->color;
+                        rotateRight(sibling);
+                        rotateLeft(parent);
+                    }
+                } else {
+                    if (sibling->isLeftChild()) {
+                        // Left Right
+                        sibling->right->color = parent->color;
+                        rotateLeft(sibling);
+                        rotateRight(parent);
+                    } else {
+                        // Right right
+                        sibling->right->color = sibling->color;
+                        sibling->color = parent->color;
+                        rotateLeft(parent);
+                    }
+                }
+                parent->color = BLACK;
+            } else {
+                // 2 black children
+                sibling->color = RED;
+                if (parent->color == BLACK) {
+                    fixDoubleBlack(parent);
+                } else {
+                    parent->color = BLACK;
+                }
             }
         }
     }
-
-    root->color = kcBlack;
 }
 
 void RedBlackTree::insert(const int &val) {
@@ -242,22 +414,62 @@ void RedBlackTree::insert(const int &val) {
 
     root = BSTInsert(root, newNode);
 
-    insertionDidFinish(newNode);
+    fixDoubleRed(newNode);
+}
+
+void RedBlackTree::deleteNodeWithValue(const int &val) {
+    if (!root)
+        return;
+
+    auto *nodeToDelete = search(val);
+
+    if (!nodeToDelete)
+        return;
+
+    deleteNode(nodeToDelete);
 }
 
 int main() {
     RedBlackTree tree;
 
-//    tree.insert(7);
-//    tree.insert(6);
-//    tree.insert(5);
-//    tree.insert(4);
-//    tree.insert(3);
-//    tree.insert(2);
-//    tree.insert(1);
+    tree.insert(7);
+    tree.insert(3);
+    tree.insert(18);
+    tree.insert(10);
+    tree.insert(22);
+    tree.insert(8);
+    tree.insert(11);
+    tree.insert(26);
+    tree.insert(2);
+    tree.insert(6);
+    tree.insert(13);
 
-    tree.inOrder();     // 1 2 3 4 5 6 7
-    tree.levelOrder();  // 6 4 7 2 5 1 3
+    tree.inOrder();
+    tree.levelOrder();
+    cout << endl;
+
+    tree.deleteNodeWithValue(18);
+    tree.deleteNodeWithValue(11);
+    tree.deleteNodeWithValue(3);
+    tree.deleteNodeWithValue(10);
+    tree.deleteNodeWithValue(22);
+
+    tree.inOrder();
+    tree.levelOrder();
+
+//    do {
+//        int x;
+//        cin >> x;
+//
+//        if (x == -1)
+//            break;
+//
+//        tree.insert(x);
+//
+//    } while (true);
+
+//    tree.inOrder();     // 1 2 3 4 5 6 7
+//    tree.levelOrder();  // 6 4 7 2 5 1 3
 
     return 0;
 }
