@@ -14,11 +14,23 @@ private:
 
     static int rightChild(int i) { return (2 * i) + 2; }
 
+    [[nodiscard]] int leafNodeStartIdx() const { return (size / 2) + 2; }
+
+    [[nodiscard]] int heapifyStartIdx() const { return (size / 2) - 1; }
+
 public:
     explicit MaxHeap(int cap) {
         store = new int[cap];
         capacity = cap;
         size = 0;
+    }
+
+    int getLeafNodeStartIndex() {
+        return leafNodeStartIdx();
+    }
+
+    int getHeapifyStartIndex() {
+        return heapifyStartIdx();
     }
 
     /**
@@ -184,10 +196,16 @@ int main() {
 
     while (!h.isEmpty()) {
         h.extractMax();
-        h.print();
     }
 
     h.printAlt();
+
+    /*
+     * Use this when you are making a heap from an array, it will heapify the array
+     */
+//    for (int i = h.getHeapifyStartIndex(); i >= 0; --i) {
+//        h.heapify(i);
+//    }
 
     return 0;
 }
