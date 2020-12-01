@@ -178,38 +178,61 @@ Node *deleteValueFromBST(int val, Node *root) {
     else if (val > root->data)
         root->right = deleteValueFromBST(val, root->right);
     else {
-        if (!root->left) {
-            auto *temp = root->right;
-            delete root;
-            return temp;
-        }
+        if (!root->left || !root->right) {
+            auto *temp = root->left ? root->left : root->right;
 
-        if (!root->right) {
-            auto *temp = root->left;
-            delete root;
-            return temp;
-        }
+            if (!temp) {
+                temp = root;
+                root = nullptr;
+            } else {
+                *root = *temp;
+            }
 
-        auto *temp = smallestValueInSubtreeOfBST(root->right);  // in ordr succ = min in right ST
-        root->data = temp->data;
-        root->right = deleteValueFromBST(temp->data, root->right);  // Delete chosen node and update right ST
+            delete temp;
+        } else {
+            auto *temp = smallestValueInSubtreeOfBST(root->right);  // in ordr succ = min in right ST
+            root->data = temp->data;
+            root->right = deleteValueFromBST(temp->data, root->right);  // Delete chosen node and update right ST
+        }
     }
 
     return root;
 }
 
 int main(int argc, char **argv) {
-    iv inOrder = {4, 2, 5, 1, 6, 3, 7};
-    iv preOrder = {1, 2, 4, 5, 3, 6, 7};
-    iv postOrder = {4, 5, 2, 6, 7, 3, 1};
+    vector<int> io = {20, 30, 40, 50, 60, 70, 80};
+    vector<int> preo = {50, 30, 20, 40, 70, 60, 80};
+    vector<int> po = {20, 40, 30, 60, 80, 70, 50};
 
-    auto *tree = createBTFromInAndPostOrder(inOrder, postOrder);
+    Node *root{nullptr};
+    root = createBTFromInAndPreOrder(io, preo);
 
-    printBST(tree);
+//    root = insertValueInBST(50, root);
+//    root = insertValueInBST(30, root);
+//    root = insertValueInBST(20, root);
+//    root = insertValueInBST(40, root);
+//    root = insertValueInBST(70, root);
+//    root = insertValueInBST(60, root);
+//    root = insertValueInBST(80, root);
 
-    cout << "Smallest value: " << smallestValueInSubtreeOfBST(tree)->data << endl;
+    cout << "Inorder traversal of the given tree \n";
+    printBST(root);
+
+    cout << "\nDelete 20\n";
+    root = deleteValueFromBST(20, root);
+    cout << "Traversal of the modified tree \n";
+    printBST(root);
+
+    cout << "\nDelete 30\n";
+    root = deleteValueFromBST(30, root);
+    cout << "Traversal of the modified tree \n";
+    printBST(root);
+
+    cout << "\nDelete 50\n";
+    root = deleteValueFromBST(50, root);
+    cout << "Traversal of the modified tree \n";
+    printBST(root);
 
     return 0;
 }
-
 
