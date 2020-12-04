@@ -125,7 +125,7 @@ public:
 
         // Othewise, if size is just 1, return the elem at 0th index
         if (size == 1) {
-            return store[size--];
+            return store[--size];
         }
 
         // Else, we delete the elem, replace it with leaf node, and fix violations
