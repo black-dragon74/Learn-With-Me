@@ -1,21 +1,65 @@
 #include <bits/stdc++.h>
 
 using namespace std;
+map<char, int> mMap;
 
 class Graph {
 private:
-    int numElements;
+    int numVertices;
     vector<vector<int>> adjList;
     bool *visited;
 
-    void resetTraversal() { memset(this->visited, false, sizeof(visited)); }
+    void findBridge(int startVertex, bool *vis, int *discoveredAt, int *low, int *parent) {
+        // Mark as visited
+        vis[startVertex] = true;
+
+        // To keep a track of discovery time
+        static int time{0};
+
+        // Update the time
+        discoveredAt[startVertex] = low[startVertex] = ++time;
+
+        // Get current vertices
+        auto adjVertices = adjList[startVertex];
+
+        for (const auto &adjVertex: adjVertices) {
+            if (!vis[adjVertex]) {
+                // Parent adjVertex is obv the startVertex
+                parent[adjVertex] = startVertex;
+
+                // Recurse over adjVertex
+                findBridge(adjVertex, vis, discoveredAt, low, parent);
+
+                // Update the low discovery value
+                // Now you might wonder how are we updating the low val for every adj vertex
+                // Well, coz we are iterating over each adj vertex and to find min would not be viable in recursion
+                // So, we really change the min value only when we find a minVal lower than the current one
+                low[startVertex] = min(low[startVertex], low[adjVertex]);
+
+                // Check if it is a bridge
+                // It is a bridge when the value of adjVertex is greater than the parent (startVertex) and there
+                // are no adj nodes that have a lower value than its parent.
+                if (low[adjVertex] > low[startVertex]) {
+                    // bridge is found
+                    cout << startVertex << " -> " << adjVertex << " is a bridge.\n";
+                }
+            }
+
+            // If adjVertex is not the parent of the startVertex
+            // Update the low of start vertex
+            if (adjVertex != parent[startVertex])
+                low[startVertex] = min(low[startVertex], discoveredAt[adjVertex]);
+        }
+    }
 
 public:
     explicit Graph(int size) {
-        this->numElements = size;
-        this->adjList = vector<vector<int>>(numElements);
-        this->visited = new bool[numElements];
-        resetTraversal();
+        this->numVertices = size;
+        this->adjList = vector<vector<int>>(numVertices);
+        this->visited = new bool[numVertices];
+        for (int i = 0; i < numVertices; ++i) {
+            this->visited[i] = false;
+        }
     }
 
     void addEdge(int src, int dest) {
@@ -24,7 +68,7 @@ public:
     }
 
     void print() {
-        for (int i = 0; i < numElements; ++i) {
+        for (int i = 0; i < numVertices; ++i) {
             cout << "Vertex " << i << " |-";
             for (const auto &a: adjList[i])
                 cout << "-> " << a << " ";
@@ -102,34 +146,51 @@ public:
         cout << endl;
     }
 
-    void reinit() { resetTraversal(); }
+    void reinit() {
+        for (int i = 0; i < numVertices; ++i) {
+            visited[i] = false;
+        }
+    }
+
+    void getBridges() {
+        bool *vis = new bool[numVertices];
+        int *discoveredAt = new int[numVertices];
+        int *low = new int[numVertices];
+        int *parent = new int[numVertices];
+
+        for (int i = 0; i < numVertices; ++i)
+            parent[i] = 0, vis[i] = false;
+
+        for (int i = 0; i < numVertices; ++i)
+            if (!visited[i])
+                findBridge(i, vis, discoveredAt, low, parent);
+    }
 };
 
 int main(int argc, char **argv) {
-    Graph g(8);
+    auto start = 'a';
+    auto startI = 1;
 
-    g.addEdge(0, 1);
-    g.addEdge(0, 2);
-    g.addEdge(0, 3);
-    g.addEdge(1, 5);
-    g.addEdge(1, 4);
-    g.addEdge(2, 6);
-    g.addEdge(3, 7);
-    g.addEdge(4, 7);
-    g.addEdge(5, 7);
-    g.addEdge(6, 7);
+    while (start <= 'z') {
+        mMap[start] = startI;
+        start++, startI++;
+    }
 
-    g.bfs();
-    g.reinit();
+    Graph g1(mMap['p']);    // We have values upto `o`
 
+    g1.addEdge(0, 1);
+    g1.addEdge(1, 2);
+    g1.addEdge(1, 3);
+    g1.addEdge(2, 3);
+
+    g1.getBridges();
+
+    g1.bfs();
     cout << endl;
+    g1.reinit();
 
-    g.dfs();
-
-    cout << endl;
-    g.reinit();
-
-    g.dfsIter();
+    g1.dfsIter();
+    g1.reinit();
 
     return 0;
 }
