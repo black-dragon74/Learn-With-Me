@@ -105,15 +105,17 @@ public:
         }
     }
 
-    void dfs(int startVertex = 0) {
-        cout << startVertex << " ";
+    void dfs(int startVertex = 0, bool print = true) {
+        if (print)
+            cout << startVertex << " ";
+
         visited[startVertex] = true;
 
         auto adjNodes = adjList[startVertex];
 
         for (const auto &node: adjNodes) {
             if (!visited[node])
-                dfs(node);
+                dfs(node, print);
         }
     }
 
@@ -165,9 +167,35 @@ public:
             if (!visited[i])
                 findBridge(i, vis, discoveredAt, low, parent);
     }
+
+    int countConnectedComponents() {
+        auto *vis = new bool[numVertices];
+        for (int i = 0; i < numVertices; ++i) {
+            vis[i] = false;
+        }
+
+        function<void(int)> internalDFS = [vis, this, &internalDFS](int node) {
+            vis[node] = true;
+
+            for (const auto &a: adjList[node]) {
+                if (!vis[a])
+                    internalDFS(a);
+            }
+        };
+
+        int count{0};
+        for (int i = 0; i < numVertices; ++i) {
+            if (!vis[i]) {
+                internalDFS(i);
+                count++;
+            }
+        }
+
+        return count;
+    }
 };
 
-int main(int argc, char **argv) {
+int main() {
     auto start = 'a';
     auto startI = 1;
 
@@ -176,12 +204,11 @@ int main(int argc, char **argv) {
         start++, startI++;
     }
 
-    Graph g1(mMap['p']);    // We have values upto `o`
+    Graph g1(5);    // We have values upto `o`
 
-    g1.addEdge(0, 1);
-    g1.addEdge(1, 2);
-    g1.addEdge(1, 3);
+    g1.addEdge(1, 0);
     g1.addEdge(2, 3);
+    g1.addEdge(3, 4);
 
     g1.getBridges();
 
@@ -191,6 +218,8 @@ int main(int argc, char **argv) {
 
     g1.dfsIter();
     g1.reinit();
+
+    cout << "Num of connected components: " << g1.countConnectedComponents() << endl;
 
     return 0;
 }
