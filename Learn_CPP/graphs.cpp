@@ -193,6 +193,61 @@ public:
 
         return count;
     }
+    
+    bool cycleInUndirectedGraph(int node = 0) {
+            vector<bool> visited(numVertices, false);
+            vector<int> parent(numVertices, -1);
+
+            deque<int> q;
+            q.push_back(node);
+
+            while (!q.empty()) {
+                auto curr = q.front();
+                q.pop_front();
+
+                visited[curr] = true;
+
+                for (const auto &next: adjList[curr]) {
+                    if (!visited[next]) {
+                        parent[next] = curr;
+                        q.push_back(next);
+                    } else {
+                        if (next != parent[curr]) {
+                            fprintf(stdout, "Cycle: %d isn't parent of %d. Detected at: %d\n", parent[curr], next, curr);
+                            return true;
+                        }
+                    }
+                }
+            }
+            for (int i = 0; i < numVertices; ++i) {
+                fprintf(stdout, "Parent of %d is %d\n", i, parent[i]);
+            }
+            return false;
+        }
+
+        bool cycleInDirectedGraph(int node = 0) {
+            vector<bool> visited = vector<bool>(numVertices, false);
+            vector<int> parent = vector<int>(numVertices, -1);
+
+            queue<int> q;
+            q.push(node);
+
+            while (!q.empty()) {
+                auto curr = q.front();
+                q.pop();
+                visited[curr] = true;
+
+                for (const auto &next: adjList[curr]) {
+                    if (!visited[next])
+                        q.push(next);
+                    else {
+                        fprintf(stdout, "Cycle to %d. Detected at: %d\n", next, curr);
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
 };
 
 int main() {
