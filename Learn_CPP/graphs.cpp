@@ -248,6 +248,46 @@ public:
             }
             return false;
         }
+    
+    void kahnsAlgo(int start = 0) {
+            vector<int> inDegree(numVertices, 0);
+            vector<int> top_ordering;
+            queue<int> q;
+            int count{0};
+
+            for (int i = 0; i < numVertices; ++i) {
+                for (const auto &edge: adjList[i])
+                    inDegree[edge]++;
+            }
+
+            // Add all nodes with in-degree 0 to the q
+            for (int i = 0; i < numVertices; ++i) {
+                if (inDegree[i] == 0)
+                    q.push(i);
+            }
+
+            while (!q.empty()) {
+                // Take a node
+                auto curr = q.front();
+                q.pop();
+                top_ordering.emplace_back(curr);
+
+                for (const auto &edge: adjList[curr]) {
+                    if (--inDegree[edge] == 0)
+                        q.push(edge);
+                }
+                count++;
+            }
+
+            if (count != numVertices) {
+                cout << "Error. The graph has a cycle.\n";
+            } else {
+                for (auto &a: top_ordering) {
+                    cout << a << " ";
+                }
+                cout << endl;
+            }
+        }
 };
 
 int main() {
