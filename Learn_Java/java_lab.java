@@ -9,12 +9,15 @@ package com.blackdragon74;
 import java.util.Arrays;
 import java.util.HashMap;
 
+// Write a program to display your information using print () method.
 class Ques1 {
     public static void main(String[] args) {
         System.out.println("Name: Niraj\nReg: 181015001\nPlace: NOYB");
     }
 }
 
+
+// Write a program to display “Java is an object oriented programming language” using command line arguments.
 class Ques2 {
     public static void main(String[] args) {
         if (args.length != 0) {
@@ -23,6 +26,7 @@ class Ques2 {
     }
 }
 
+// Write a program to perform all the arithmetic operation by taking inputs from command line.
 class Ques3 {
     public static void main(String[] args) {
         int a = Integer.parseInt(args[0]);
@@ -35,6 +39,7 @@ class Ques3 {
     }
 }
 
+// Write a program to perform the addition of n nos. by taking inputs from command line.
 class Ques4 {
     public static void main(String[] args) {
         int numElems = Integer.parseInt(args[0]);
@@ -48,6 +53,7 @@ class Ques4 {
     }
 }
 
+// Write a program to compute & print factorial of any given number.
 class Ques5 {
     public static void main(String[] args) {
         int n = Integer.parseInt(args[0]);
@@ -67,6 +73,7 @@ class Ques5 {
     }
 }
 
+// Write a program to compute the sum of digits of a given integer.
 class Ques6 {
     public static void main(String[] args) {
         int n = Integer.parseInt(args[0]);
@@ -83,6 +90,7 @@ class Ques6 {
     }
 }
 
+// Write a program to calculate & print first n Fibonacci numbers.
 class Ques7 {
     static int fib(int n) {
         if (n <= 1)
@@ -97,6 +105,7 @@ class Ques7 {
     }
 }
 
+// Write a program to reverse the digits of a numbers.
 class Ques8 {
     public static void main(String[] args) {
         int n = Integer.parseInt(args[0]);
@@ -111,6 +120,7 @@ class Ques8 {
     }
 }
 
+// Write a program to show the use of typecasting.
 class Ques9 {
     public static void main(String[] args) {
         double nf = 1.23;
@@ -120,6 +130,7 @@ class Ques9 {
     }
 }
 
+// Write a program to show the use of type conversion.
 class Ques10 {
     public static void main(String[] args) {
         int a = 10;
@@ -131,6 +142,7 @@ class Ques10 {
     }
 }
 
+// Write a program to show the use of Boolean data type.
 class Ques11 {
     public static void main(String[] args) {
         boolean useMe = args.length == 0;
@@ -138,6 +150,7 @@ class Ques11 {
     }
 }
 
+// Write a program to show the scope and lifetime of a variable.
 class Ques12 {
     static int global = 0;
 
@@ -155,6 +168,7 @@ class Ques12 {
     }
 }
 
+// Write a program to sort element of an array.
 class Ques13 {
     public static void main(String[] args) {
         int[] array = {1, 2, 3, 4, 4, 5, 5, 6, 6, 7};
@@ -166,6 +180,7 @@ class Ques13 {
     }
 }
 
+// Write a program to perform the matrix addition & multiplication by allocation memory for an array dynamically.
 class Ques14 {
     public static void main(String[] args) {
         int numRows = Integer.parseInt(args[0]);
@@ -190,6 +205,7 @@ class Ques14 {
     }
 }
 
+// Write a program to read marks out of 100
 class Ques15 {
     public static void main(String[] args) {
         int marks = Integer.parseInt(args[0]);
@@ -206,6 +222,7 @@ class Ques15 {
     }
 }
 
+// Write a program to check whether a year is a leap year or not.
 class Ques16 {
     public static boolean checkLeapYear(int year) {
         if (year % 4 == 0) {
@@ -226,13 +243,14 @@ class Ques16 {
     }
 }
 
+// Write a program to read string from console and display the number of occurrence of each word.
 class Ques17 {
     public static void main(String[] args) {
         String myStr = "They don't know that they know we know they know";
         HashMap<String, Integer> map = new HashMap<>();
 
         for (String word : myStr.split(" ")) {
-            word = word.toLowerCase();
+            word = word.toLowerCase();  // hacc, tehcc
             if (map.containsKey(word))
                 map.put(word, (map.get(word)) + 1);
             else
@@ -245,6 +263,7 @@ class Ques17 {
     }
 }
 
+// Write a program to calculate the volume of two different rectangle using class & objects.
 class Ques18 {
     static class Square {
         private final int side;
@@ -285,6 +304,7 @@ class Ques18 {
     }
 }
 
+// Write a program to show how object and be returned.
 class Ques19 {
     static class MyObj {
         private final int id;
@@ -308,6 +328,7 @@ class Ques19 {
     }
 }
 
+// Perform the Q. No. 7 using class, object and recursion.
 class Ques20 {
     static class RecursiveFactorial {
         private final int number;
