@@ -29,6 +29,9 @@ def printLineFor(mid_elem, max_num):
     for spaces in range(0, numSpaces):
         print(" ", end="")
 
+    # Print new line
+    print()
+
 
 # This function is the driver fuction for printLineFor function defned above, the reeason for separation of
 # Two functions is, you can make the program dynamic, like try with passing 10 as a max_num param to this func
@@ -39,7 +42,6 @@ def printDiamondLikePattern(max_num):
 
     while start <= max_num:
         printLineFor(start, max_num)
-        print()
 
         # If last iter, reverse
         if start == max_num and flag:
@@ -49,7 +51,6 @@ def printDiamondLikePattern(max_num):
             # Start printing the pattern in reverse now, remember we start reversing from max_num - 1
             for revNum in range(max_num - 1, 0, -1):
                 printLineFor(revNum, max_num)
-                print()
 
         # As this is not a range based loop, increment the counter
         start += 1
